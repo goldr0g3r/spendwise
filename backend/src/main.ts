@@ -9,6 +9,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // env
   const environment = app.get(ConfigService).get<Environment>(envConfigToken);
+
+  // cors
+  app.enableCors({
+    origin: environment.whitelistedDomains,
+  });
+
   // swagger
   const options = new DocumentBuilder()
     .setTitle('Spend Wise')
