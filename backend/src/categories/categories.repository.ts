@@ -8,7 +8,7 @@ import { ICreateCategoryRequest } from 'src/common/interface/category/request/IC
 import { MongoRepository } from 'src/helpers/repository';
 import { CategorySchema } from './database/Category.schema';
 import { databaseConnection } from 'src/common/constants/database';
-import { privateDecrypt, UUID } from 'crypto';
+import { UUID } from 'crypto';
 import { Model } from 'mongoose';
 import { UserRepository } from 'src/user/user.repository';
 import { plainToClass } from 'class-transformer';
