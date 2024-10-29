@@ -11,6 +11,8 @@ import { IRegisterAccount } from 'src/common/interface/user/request/IRegisterAcc
 import { DEFAULT_ROLES } from 'src/common/types/roles';
 import { ILoginAccount } from 'src/common/interface/user/request/ILoginAccount';
 import { UserRolesResponse } from './dto/response/userRole.response';
+import UserSessionResponse from './dto/response/userSessionResponse';
+import { ISessionDevice } from 'src/common/interface/user/base/IUserSession';
 
 @Injectable()
 export class UserRepository extends MongoRepository {
@@ -42,6 +44,30 @@ export class UserRepository extends MongoRepository {
     }
   }
 
+  async addRefreshToken(
+    userId: UUID,
+    session: ISessionDevice,
+  ): Promise<boolean> {
+    try {
+      const user = await this.userModel.findOne({ id: userId });
+      if (!user) return false;
+
+      const found = user.sessions.findIndex(
+        (s) => s.deviceId === session.deviceId,
+      );
+      if (found !== -1) {
+        user.sessions[found].refreshToken = session.refreshToken;
+      } else {
+        user.sessions.push(session);
+      }
+      await user.save();
+
+      return true;
+    } catch (error) {
+      throw new BadRequestException(error.message.toString());
+    }
+  }
+
   async loginAccount(request: ILoginAccount) {
     try {
       const { user, error } = await this.userModel.authenticate()(
@@ -67,7 +93,7 @@ export class UserRepository extends MongoRepository {
 
   async findUserById(userId: UUID) {
     try {
-      const user = await this.userModel.findOne({ userId });
+      const user = await this.userModel.findOne({ id: userId });
       return this.toUserModel(user);
     } catch (error) {
       throw new BadRequestException(error.toString());
@@ -76,7 +102,7 @@ export class UserRepository extends MongoRepository {
 
   async findUserByEmail(email: string) {
     try {
-      const user = await this.userModel.findOne({ email });
+      const user = await this.userModel.findOne({ email: email });
       return this.toUserModel(user);
     } catch (error) {
       throw new BadRequestException(error.toString());
@@ -105,5 +131,19 @@ export class UserRepository extends MongoRepository {
     return plainToClass(UserRolesResponse, user, {
       excludeExtraneousValues: true,
     });
+  }
+
+  private toUserSessionModel(
+    user: UserSchema,
+    status: boolean,
+    message: string,
+  ) {
+    return plainToClass(
+      UserSessionResponse,
+      { user, status, message },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 }

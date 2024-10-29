@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { plainToClass } from 'class-transformer';
 import { UUID } from 'crypto';
 import { envConfigToken } from 'src/common/constants/envToken';
 import { ILoginAccount } from 'src/common/interface/user/request/ILoginAccount';
@@ -12,6 +13,7 @@ import { IRegisterAccount } from 'src/common/interface/user/request/IRegisterAcc
 import { IUserResponseWithTokens } from 'src/common/interface/user/response/IUserResponse';
 import { JWTToken } from 'src/common/types/auth';
 import { Environment } from 'src/config';
+import { UserResponseWithToken } from 'src/user/dto/response/userResponseWithToken';
 import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
@@ -22,25 +24,50 @@ export class AuthService {
     private environment: ConfigService,
   ) {}
 
-  async registerAccount(request: IRegisterAccount) {
-    return this.userRepository.registerAccount(request);
+  async registerAccount(
+    request: IRegisterAccount,
+    deviceId: UUID,
+    userAgent: string,
+  ) {
+    const user = await this.userRepository.registerAccount(request);
+    if (!user)
+      throw new UnprocessableEntityException('Unable to register user');
+    if (typeof user === 'string') throw new UnprocessableEntityException(user);
+
+    const tokens = await this.generateTokens(user.username, user.id);
+
+    await this.userRepository.addRefreshToken(user.id, {
+      deviceId: deviceId,
+      refreshToken: tokens.refresh,
+    });
+
+    return this.toUserResponseWithTokens(user, tokens);
   }
 
-  async loginAccount(request: ILoginAccount) {
+  async loginAccount(
+    request: ILoginAccount,
+    deviceId: UUID,
+    userAgent: string,
+  ) {
     const user = await this.userRepository.loginAccount(request);
     if (!user) throw new UnprocessableEntityException('Unable to log you in');
     if (typeof user === 'string') throw new UnprocessableEntityException(user);
 
     const tokens = await this.generateTokens(user.username, user.id);
-
-    return { user, tokens };
+    await this.userRepository.addRefreshToken(user.id, {
+      deviceId: deviceId,
+      refreshToken: tokens.refresh,
+    });
+    return this.toUserResponseWithTokens(user, tokens);
   }
 
   async validateRefreshToken(refreshToken: JWTToken) {
-    return this.jwtService.verify(refreshToken, {
+    const decode = this.jwtService.verify(refreshToken, {
       secret:
         this.environment.get<Environment>(envConfigToken).refreshTokenSecret,
     });
+    console.log(decode);
+    return decode;
   }
 
   async generateTokens(username: string, userId: UUID) {
@@ -80,5 +107,17 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException(error.message.toString());
     }
+  }
+
+  private toUserResponseWithTokens(user: any, tokens: any) {
+    return plainToClass(
+      UserResponseWithToken,
+      { user, tokens },
+      {
+        excludeExtraneousValues: true,
+        excludePrefixes: ['password'],
+        groups: ['user'],
+      },
+    );
   }
 }
