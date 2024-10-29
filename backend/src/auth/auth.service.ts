@@ -61,6 +61,9 @@ export class AuthService {
     return this.toUserResponseWithTokens(user, tokens);
   }
 
+  async logoutAccount(userId: UUID, refreshToken: JWTToken) {
+    return this.userRepository.logoutAccount(userId, refreshToken);
+  }
   async validateRefreshToken(refreshToken: JWTToken) {
     const decode = this.jwtService.verify(refreshToken, {
       secret:

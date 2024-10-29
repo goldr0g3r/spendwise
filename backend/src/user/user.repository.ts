@@ -13,6 +13,8 @@ import { ILoginAccount } from 'src/common/interface/user/request/ILoginAccount';
 import { UserRolesResponse } from './dto/response/userRole.response';
 import UserSessionResponse from './dto/response/userSessionResponse';
 import { ISessionDevice } from 'src/common/interface/user/base/IUserSession';
+import { JWTToken } from 'src/common/types/auth';
+import { use } from 'passport';
 
 @Injectable()
 export class UserRepository extends MongoRepository {
@@ -77,6 +79,25 @@ export class UserRepository extends MongoRepository {
 
       const userResponse = this.toUserModel(user);
       return userResponse;
+    } catch (error) {
+      throw new BadRequestException(error.message.toString());
+    }
+  }
+
+  async logoutAccount(userId: UUID, refreshToken: JWTToken) {
+    try {
+      const user = await this.userModel.findOne({ id: userId });
+      if (!user)
+        return this.toUserSessionModel(undefined, false, 'User not found');
+      console.log(user.sessions);
+      user.sessions = user.sessions.map((session) => {
+        if (session.refreshToken === refreshToken) {
+          return { ...session, refreshToken: undefined };
+        }
+        return session;
+      });
+      await user.save();
+      return this.toUserSessionModel(user, true, 'User logged out');
     } catch (error) {
       throw new BadRequestException(error.message.toString());
     }

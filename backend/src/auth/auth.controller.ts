@@ -9,6 +9,8 @@ import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
+import { JWTToken } from 'src/common/types/auth';
+import { RefreshTokenGuard } from 'src/common/guards/refreshToken.guard';
 
 @ApiTags('authentication')
 @Controller(AuthParentRoutes)
@@ -52,5 +54,17 @@ export class AuthController {
     const accessToken = request.headers.authorization.split(' ')[1];
     const user = this.jwtService.decode(accessToken);
     return { user };
+  }
+
+  @ApiOperation({ summary: 'Logout from an account' })
+  @Post(AuthRoutes.logout)
+  @UseGuards(RefreshTokenGuard)
+  @ApiBearerAuth('refreshToken')
+  async logout(@Req() request: Request) {
+    const refreshToken = request.headers?.authorization.split(
+      ' ',
+    )[1] as JWTToken;
+    const decode = this.jwtService.decode(refreshToken);
+    return this.authService.logoutAccount(decode.id, refreshToken);
   }
 }

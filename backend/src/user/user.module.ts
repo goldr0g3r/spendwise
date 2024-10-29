@@ -5,6 +5,7 @@ import { UserRepository } from './user.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import UserSchema, { UserSchemaObject } from './database/user.schema';
 import { databaseConnection } from 'src/common/constants/database';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { databaseConnection } from 'src/common/constants/database';
       ],
       databaseConnection.user,
     ),
+    JwtModule.register({}),
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],
