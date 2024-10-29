@@ -10,13 +10,14 @@ import {
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CategoriesRepository } from './categories.repository';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { CategoryRoutes } from './categories.routes';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CategoryRoutes, CatParentRoute } from './categories.routes';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { CreateCategoryRequest } from './dto/request/CategoryCreateRequest';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 
-@Controller('categories')
+@ApiTags('categories')
+@Controller(CatParentRoute)
 export class CategoriesController {
   constructor(
     private readonly categoriesService: CategoriesService,
