@@ -89,7 +89,6 @@ export class UserRepository extends MongoRepository {
       const user = await this.userModel.findOne({ id: userId });
       if (!user)
         return this.toUserSessionModel(undefined, false, 'User not found');
-      console.log(user.sessions);
       user.sessions = user.sessions.map((session) => {
         if (session.refreshToken === refreshToken) {
           return { ...session, refreshToken: undefined };

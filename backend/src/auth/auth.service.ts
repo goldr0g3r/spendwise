@@ -69,7 +69,6 @@ export class AuthService {
       secret:
         this.environment.get<Environment>(envConfigToken).refreshTokenSecret,
     });
-    console.log(decode);
     return decode;
   }
 

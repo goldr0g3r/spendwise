@@ -11,6 +11,7 @@ import {
   UserSessionSchemaObject,
 } from './userSession.schema';
 import { Roles } from 'src/common/types/roles';
+import { JWTToken } from 'src/common/types/auth';
 
 @Schema()
 export default class UserSchema implements IUser, IUserSession {
