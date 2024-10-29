@@ -5,20 +5,36 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { databaseConnection } from './common/constants/database';
-import { ConfigModule } from '@nestjs/config';
-import { registerConfig } from './config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Environment, registerConfig } from './config';
+import { CategoriesModule } from './categories/categories.module';
+import { envConfigToken } from './common/constants/envToken';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [registerConfig]
+      load: [registerConfig],
     }),
     MongooseModule.forRootAsync({
       connectionName: databaseConnection.user,
-      useFactory: () => ({
-        uri: 'mongodb://localhost:27017/',
-        dbName: databaseConnection.user,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<Environment>(envConfigToken).mongoURI,
+        dbName: config.get<Environment>(envConfigToken).userDb,
+        retryWrites: true,
+        writeConcern: {
+          w: 'majority',
+          j: true,
+        },
+      }),
+    }),
+    MongooseModule.forRootAsync({
+      connectionName: databaseConnection.category,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<Environment>(envConfigToken).mongoURI,
+        dbName: config.get<Environment>(envConfigToken).categoriesDb,
         retryWrites: true,
         writeConcern: {
           w: 'majority',
@@ -28,6 +44,7 @@ import { registerConfig } from './config';
     }),
     UserModule,
     AuthModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
