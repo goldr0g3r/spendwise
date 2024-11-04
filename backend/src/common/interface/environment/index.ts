@@ -8,6 +8,7 @@ export interface IEnvironment {
   // Database names
   userDb: string;
   categoriesDb: string;
+  bankDb: string;
 
   // jwt
   accessTokenSecret: string;

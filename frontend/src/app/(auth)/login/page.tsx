@@ -15,24 +15,17 @@ const LoginPage = () => {
     <div>
       <h1>Login Page</h1>
       <div>
-        <form action="#" method="POST">
+        <form method="POST">
           <div>
             <label htmlFor="username">Username</label>
             <input type="text" id="username" name="email" />
           </div>
-          <div>
-            <label htmlFor="username">email</label>
-            <input type="email" id="email" name="email" />
-          </div>{" "}
-          <div>
-            <label htmlFor="username">name</label>
-            <input type="text" id="name" name="email" />
-          </div>
+
           <div>
             <label htmlFor="password">Password</label>
             <input type="password" id="password" name="password" />
           </div>
-          <button onClick={handleSubmit}>Login</button>
+          <button onClick={() => handleSubmit}>Login</button>
         </form>
       </div>
     </div>

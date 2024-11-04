@@ -9,10 +9,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Environment, registerConfig } from './config';
 import { CategoriesModule } from './categories/categories.module';
 import { envConfigToken } from './common/constants/envToken';
-import { CardsModule } from './cards/cards.module';
 import { GoalsModule } from './goals/goals.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { BudgetModule } from './budget/budget.module';
+import { BankAccountModule } from './bank-account/bank-account.module';
 
 @Module({
   imports: [
@@ -46,13 +46,26 @@ import { BudgetModule } from './budget/budget.module';
         },
       }),
     }),
+    MongooseModule.forRootAsync({
+      connectionName: databaseConnection.bankAccount,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<Environment>(envConfigToken).mongoURI,
+        dbName: config.get<Environment>(envConfigToken).bankDb,
+        retryWrites: true,
+        writeConcern: {
+          w: 'majority',
+          j: true,
+        },
+      }),
+    }),
     UserModule,
     AuthModule,
     CategoriesModule,
-    CardsModule,
     GoalsModule,
     TransactionModule,
     BudgetModule,
+    BankAccountModule,
   ],
   controllers: [AppController],
   providers: [AppService],

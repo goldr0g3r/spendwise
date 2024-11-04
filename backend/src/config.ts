@@ -29,6 +29,10 @@ export class Environment implements IEnvironment {
   categoriesDb: string;
 
   @IsNotEmpty()
+  @Expose({ name: 'BANKACCOUNT_DATABASE' })
+  bankDb: string;
+
+  @IsNotEmpty()
   @Expose({ name: 'ACCESSTOKEN_SECRET' })
   accessTokenSecret: string;
 
