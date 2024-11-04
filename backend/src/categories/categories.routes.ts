@@ -7,4 +7,5 @@ export const CategoryRoutes = {
   getOne: 'get-one',
   getAll: 'getAll',
   getByUser: 'getByUser',
+  list: 'list',
 };

@@ -70,9 +70,13 @@ export class CategoriesRepository extends MongoRepository {
     });
   }
 
-  private toCategoryList(category: CategorySchema[]) {
-    return plainToClass(CategoryResponseList, category, {
-      excludeExtraneousValues: true,
-    });
+  private toCategoryList(categories: CategorySchema[]) {
+    return plainToClass(
+      CategoryResponse,
+      { categories },
+      {
+        excludeExtraneousValues: false,
+      },
+    );
   }
 }

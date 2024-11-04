@@ -4,5 +4,5 @@ export interface ICreateCategoryRequest {
   name: string;
   icon?: string;
   color?: string;
-  userId: UUID;
+  userId?: UUID;
 }

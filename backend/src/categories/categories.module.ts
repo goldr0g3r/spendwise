@@ -9,9 +9,11 @@ import {
 } from './database/Category.schema';
 import { databaseConnection } from 'src/common/constants/database';
 import { CategoriesRepository } from './categories.repository';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    JwtModule.register({}),
     MongooseModule.forFeature(
       [
         {
