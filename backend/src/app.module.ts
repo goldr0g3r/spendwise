@@ -9,6 +9,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Environment, registerConfig } from './config';
 import { CategoriesModule } from './categories/categories.module';
 import { envConfigToken } from './common/constants/envToken';
+import { CardsModule } from './cards/cards.module';
+import { GoalsModule } from './goals/goals.module';
+import { TransactionModule } from './transaction/transaction.module';
+import { BudgetModule } from './budget/budget.module';
 
 @Module({
   imports: [
@@ -45,6 +49,10 @@ import { envConfigToken } from './common/constants/envToken';
     UserModule,
     AuthModule,
     CategoriesModule,
+    CardsModule,
+    GoalsModule,
+    TransactionModule,
+    BudgetModule,
   ],
   controllers: [AppController],
   providers: [AppService],
