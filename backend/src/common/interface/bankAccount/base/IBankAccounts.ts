@@ -9,8 +9,8 @@ export interface IBankAccount {
 }
 
 export interface IBankAccountList {
-  accounts: IBankAccount[];
-  cards: ICards[];
+  accounts?: IBankAccount[];
+  cards?: ICards[];
   userId: UUID;
 }
 export interface ICards {

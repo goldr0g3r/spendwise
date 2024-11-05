@@ -21,4 +21,31 @@ export class BankAccountRepository extends MongoRepository {
   ) {
     super();
   }
+
+  async addAccount(userId, bankAccount: IBankAccount) {
+    const user = await this.userRepository.findUserById(userId);
+    if (!user) {
+      throw new UnprocessableEntityException('User not found');
+    }
+    const bankAccounts = await this.bankAccountModel.findOne({
+      userId: userId,
+    });
+    if (!bankAccounts) {
+      const newBankAccount = await this.bankAccountModel.create({
+        userId: userId,
+        accounts: [bankAccount],
+      });
+      await newBankAccount.save();
+      return true;
+    }
+    bankAccounts.accounts.push(bankAccount);
+    await bankAccounts.save();
+    // const newBankAccount = new this.bankAccountModel({
+    //   userId: userId,
+    //   accounts: [bankAccount],
+    // });
+
+    // await newBankAccount.save();
+    return true;
+  }
 }

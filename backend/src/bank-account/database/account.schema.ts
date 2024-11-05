@@ -10,7 +10,7 @@ export class AccountSchema implements IBankAccount {
   last4Digits: number;
   @Prop({ required: true })
   accountName: string;
-  @Prop({ required: true, unique: true, default: () => randomUUID() })
+  @Prop({ required: true,  default: () => randomUUID() })
   id: UUID;
 }
 

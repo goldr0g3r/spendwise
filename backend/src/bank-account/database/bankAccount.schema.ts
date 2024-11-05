@@ -10,14 +10,14 @@ import { CardSchema, CardSchemaObject } from './card.schema';
 
 @Schema()
 export class BankAccountSchema implements IBankAccountList {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   userId: UUID;
 
   @Prop({ required: true, type: [AccountSchemaObject] })
-  accounts: AccountSchema[];
+  accounts?: AccountSchema[];
 
   @Prop({ required: true, type: [CardSchemaObject] })
-  cards: CardSchema[];
+  cards?: CardSchema[];
 }
 
 export const BankAccountSchemaObject =
