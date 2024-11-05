@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthParentRoutes, AuthRoutes } from './auth.routes';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -49,7 +49,7 @@ export class AuthController {
   @ApiBearerAuth('accessToken')
   @UseGuards(AccessTokenGuard)
   @ApiOperation({ summary: 'get user profile' })
-  @Post('profile')
+  @Get('profile')
   async profile(@Req() request: Request) {
     const accessToken = request.headers.authorization.split(' ')[1];
     const user = this.jwtService.decode(accessToken);
