@@ -13,6 +13,7 @@ import { GoalsModule } from './goals/goals.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { BudgetModule } from './budget/budget.module';
 import { BankAccountModule } from './bank-account/bank-account.module';
+import { LoggerModule } from './helpers/logger/Logger.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { BankAccountModule } from './bank-account/bank-account.module';
       isGlobal: true,
       load: [registerConfig],
     }),
+    LoggerModule,
     MongooseModule.forRootAsync({
       connectionName: databaseConnection.user,
       inject: [ConfigService],

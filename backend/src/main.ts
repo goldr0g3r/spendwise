@@ -4,11 +4,15 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { Environment } from './config';
 import { envConfigToken } from './common/constants/envToken';
+import { LoggerService } from './helpers/logger/Logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // env
   const environment = app.get(ConfigService).get<Environment>(envConfigToken);
+
+  // logger
+  const logger = await app.resolve(LoggerService);
 
   // cors
   app.enableCors({
@@ -32,7 +36,13 @@ async function bootstrap() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('/api-docs', app, document);
+
   await app.listen(environment.port);
+  logger.log(`Server is running on ${await app.getUrl()}`, 'Bootstrap');
+  logger.log(
+    `Api documentation is available at ${await app.getUrl()}/api-docs`,
+    'Bootstrap',
+  );
 }
 bootstrap();
